@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Patient Record | Clinical Sentinel</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .add-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .page-intro {
+            margin-bottom: 2rem;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-intro h2 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            color: #f8fafc;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .page-intro p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 992px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-section {
+            background-color: var(--bg-card, #1e293b);
+            border: 1px solid var(--border-color, #334155);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-section h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #38bdf8;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 0.75rem;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.825rem;
+            font-weight: 500;
+            color: #cbd5e1;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .form-group label .range-hint {
+            color: #64748b;
+            font-size: 0.75rem;
+        }
+
+        .form-control {
+            background-color: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 0.65rem 0.85rem;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        select.form-control {
+            cursor: pointer;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            padding: 0.85rem 1.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+        }
+
+        .results-panel {
+            position: sticky;
+            top: 2rem;
+        }
+
+        .risk-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.85rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .risk-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .disease-name {
+            font-weight: 600;
+            text-transform: capitalize;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+        }
+
+        .badge-risk {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+
+        .badge-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.4);
+        }
+
+        .badge-low {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .progress-bar-bg {
+            background: #1e293b;
+            border-radius: 6px;
+            height: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .fill-high {
+            background: linear-gradient(90deg, #f87171, #ef4444);
+        }
+
+        .fill-low {
+            background: linear-gradient(90deg, #34d399, #10b981);
+        }
+
+        .dash-btn {
+            background: rgba(99, 102, 241, 0.2);
+            border: 1px solid rgba(99, 102, 241, 0.4);
+            color: #a5b4fc;
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-weight: 600;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+            margin-top: 1rem;
+            transition: all 0.2s;
+        }
+
+        .dash-btn:hover {
+            background: rgba(99, 102, 241, 0.35);
+            color: #ffffff;
+        }
+
+        .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+    <div class="app-layout">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="brand-text">
+                    <h1>CLINICAL SENTINEL</h1>
+                    <span class="subtitle">Patient Record Ingestion & Real-Time Intelligence</span>
+                </div>
+            </div>
+            <div class="header-status">
+                <a href="/" class="results-page-link"
+                    style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background-color: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; text-decoration: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"><i
+                        class="fa-solid fa-desktop"></i> Clinician Dashboard</a>
+                <a href="/patient-history" class="results-page-link"
+                    style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background-color: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a5b4fc; text-decoration: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"><i
+                        class="fa-solid fa-history"></i> Patient History</a>
+                <a href="/results" class="results-page-link"
+                    style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background-color: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a5b4fc; text-decoration: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;"><i
+                        class="fa-solid fa-chart-line"></i> Validation Metrics</a>
+            </div>
+        </header>
+
+        <main class="add-container">
+            <div class="page-intro">
+                <div>
+                    <h2><i class="fa-solid fa-user-plus" style="color: #10b981;"></i> Ingest New EHR Patient Record</h2>
+                    <p>Enter patient demographics and clinical lab values. The record will be persisted to SQLite and
+                        evaluated immediately by XGBoost & Random Forest models.</p>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <!-- Left: Form Inputs -->
+                <form id="patient-form">
+                    <!-- Demographics -->
+                    <div class="card-section">
+                        <h3><i class="fa-solid fa-id-card"></i> Demographics & Admission Info</h3>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="anchor_age">Patient Age <span class="range-hint">(18 - 100)</span></label>
+                                <input type="number" id="anchor_age" class="form-control" value="62" min="18" max="110"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <select id="gender" class="form-control" required>
+                                    <option value="M">Male</option>
+                                    <option value="F" selected>Female</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="admission_type">Admission Type</label>
+                                <select id="admission_type" class="form-control" required>
+                                    <option value="EW EMER." selected>Emergency (EW EMER.)</option>
+                                    <option value="URGENT">Urgent</option>
+                                    <option value="ELECTIVE">Elective</option>
+                                    <option value="OBSERVATION ADMIT">Observation</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="insurance">Insurance Type</label>
+                                <select id="insurance" class="form-control" required>
+                                    <option value="Medicare" selected>Medicare</option>
+                                    <option value="Medicaid">Medicaid</option>
+                                    <option value="Private">Private</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lab Biomarkers -->
+                    <div class="card-section">
+                        <h3><i class="fa-solid fa-vial"></i> Laboratory Biomarkers</h3>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="creatinine">Serum Creatinine <span class="range-hint">(mg/dL)</span></label>
+                                <input type="number" id="creatinine" class="form-control" step="0.1" value="1.8"
+                                    placeholder="0.5 - 5.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bun">Blood Urea Nitrogen (BUN) <span
+                                        class="range-hint">(mg/dL)</span></label>
+                                <input type="number" id="bun" class="form-control" step="1" value="28"
+                                    placeholder="7 - 40" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lactate">Lactate <span class="range-hint">(mmol/L)</span></label>
+                                <input type="number" id="lactate" class="form-control" step="0.1" value="2.4"
+                                    placeholder="0.5 - 4.0" required>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="wbc">WBC Count <span class="range-hint">(k/uL)</span></label>
+                                <input type="number" id="wbc" class="form-control" step="0.1" value="13.2"
+                                    placeholder="4.0 - 12.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="platelets">Platelet Count <span class="range-hint">(k/uL)</span></label>
+                                <input type="number" id="platelets" class="form-control" step="1" value="145"
+                                    placeholder="150 - 450" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="hemoglobin">Hemoglobin <span class="range-hint">(g/dL)</span></label>
+                                <input type="number" id="hemoglobin" class="form-control" step="0.1" value="11.5"
+                                    placeholder="12.0 - 17.5" required>
+                            </div>
+                        </div>
+                        <div class="input-row">
+                            <div class="form-group">
+                                <label for="sodium">Serum Sodium <span class="range-hint">(mEq/L)</span></label>
+                                <input type="number" id="sodium" class="form-control" step="1" value="136"
+                                    placeholder="135 - 145" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="potassium">Serum Potassium <span class="range-hint">(mEq/L)</span></label>
+                                <input type="number" id="potassium" class="form-control" step="0.1" value="4.3"
+                                    placeholder="3.5 - 5.0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="glucose">Blood Glucose <span class="range-hint">(mg/dL)</span></label>
+                                <input type="number" id="glucose" class="form-control" step="1" value="140"
+                                    placeholder="70 - 180" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Diagnosis Notes -->
+                    <div class="card-section">
+                        <h3><i class="fa-solid fa-notes-medical"></i> Initial Clinical Assessment</h3>
+                        <div class="form-group">
+                            <label for="primary_diagnosis">Primary Diagnosis / Chief Complaint</label>
+                            <input type="text" id="primary_diagnosis" class="form-control"
+                                value="Acute dyspnea and elevated creatinine"
+                                placeholder="e.g. Sepsis evaluation or chest pain">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-submit" class="submit-btn">
+                        <i class="fa-solid fa-database"></i> Save Record & Run Risk Analysis
+                    </button>
+                </form>
+
+                <!-- Right: Instant Prediction Output -->
+                <div class="results-panel">
+                    <div class="card-section">
+                        <h3><i class="fa-solid fa-microchip"></i> Live Prediction Output</h3>
+                        <div id="results-placeholder" style="text-align: center; color: #64748b; padding: 2rem 0;">
+                            <i class="fa-solid fa-flask"
+                                style="font-size: 2.5rem; margin-bottom: 0.75rem; display: block; opacity: 0.5;"></i>
+                            Submit a patient record to execute real-time model scoring across the 5 disease categories.
+                        </div>
+
+                        <div id="results-content" class="hidden">
+                            <div id="status-alert"
+                                style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; padding: 0.75rem; border-radius: 8px; font-size: 0.85rem; margin-bottom: 1rem;">
+                                <i class="fa-solid fa-circle-check"></i> <span id="record-ids"></span>
+                            </div>
+
+                            <div id="risk-cards-container">
+                                <!-- Dynamically populated -->
+                            </div>
+
+                            <a id="btn-open-dashboard" href="#" class="dash-btn">
+                                <i class="fa-solid fa-stethoscope"></i> Open Patient in Main Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/add_patient.js"></script>
+</body>
+
+</html>

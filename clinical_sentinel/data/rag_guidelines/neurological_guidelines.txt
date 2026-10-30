@@ -1,0 +1,5 @@
+AHA/ASA Stroke & Intracranial Hemorrhage Guidelines:
+1. Perform urgent non-contrast Head CT or Brain MRI to differentiate ischemic stroke from hemorrhage.
+2. For acute ischemic stroke: evaluate eligibility for IV alteplase (thrombolysis) within 3 to 4.5 hours of last known well.
+3. Control blood pressure: target BP < 180/105 mmHg for thrombolysis; avoid aggressive lowering in acute ischemic stroke unless > 220/120.
+4. For intracranial hemorrhage: reverse anticoagulation, manage ICP (mannitol/hypertonic saline), and evaluate for surgical decompression.

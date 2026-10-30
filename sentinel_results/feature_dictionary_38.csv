@@ -1,0 +1,21 @@
+Group,Feature,Source,Time Window,Unit,Missing Handling
+Demographics,gender,patients,Static at admission,"Binary (0=F, 1=M)",Mode (0)
+Demographics,age,patients,Static at admission,Years,Cohort Median (65)
+Core Labs,"creatinine_[min,max,median]",labevents,charttime < 24h,mg/dL,Default 1.0 mg/dL
+Core Labs,"bun_[min,max,median]",labevents,charttime < 24h,mg/dL,Default 15.0 mg/dL
+Core Labs,"sodium_[min,max,median]",labevents,charttime < 24h,mmol/L,Default 140.0 mmol/L
+Core Labs,"potassium_[min,max,median]",labevents,charttime < 24h,mmol/L,Default 4.0 mmol/L
+Core Labs,"wbc_[min,max,median]",labevents,charttime < 24h,x10^9/L,Default 7.5 x10^9/L
+Core Labs,"platelets_[min,max,median]",labevents,charttime < 24h,x10^9/L,Default 250 x10^9/L
+Core Labs,"haemoglobin_[min,max,median]",labevents,charttime < 24h,g/dL,Default 13.0 g/dL
+Core Labs,"lactate_[min,max,median]",labevents,charttime < 24h,mmol/L,Default 1.5 mmol/L
+Core Labs,"glucose_[min,max,median]",labevents,charttime < 24h,mg/dL,Default 100.0 mg/dL
+Clinical Scores,sofa_renal,Derived from creatinine,charttime < 24h,Ordinal (0-4),Derived
+Clinical Scores,sofa_coag,Derived from platelets,charttime < 24h,Ordinal (0-4),Derived
+Clinical Scores,sirs_wbc,Derived from WBC,charttime < 24h,Binary (0/1),Derived
+Clinical Scores,bun_creatinine_ratio,Derived (BUN/Cr),charttime < 24h,Dimensionless ratio,Derived
+Administrative,admission_type_URGENT,admissions,At admission,Binary (0/1),0
+Administrative,admission_type_EW_EMER,admissions,At admission,Binary (0/1),0
+Administrative,admission_type_ELECTIVE,admissions,At admission,Binary (0/1),0
+Administrative,insurance_Medicaid,admissions,At admission,Binary (0/1),0
+Administrative,insurance_Medicare,admissions,At admission,Binary (0/1),0

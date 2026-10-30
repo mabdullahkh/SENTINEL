@@ -1,0 +1,6 @@
+Pathology,Uncalibrated_Brier,Uncalibrated_ECE,Platt_Calibrated_Brier,Platt_Calibrated_ECE
+Sepsis,0.123,0.1951,0.0609,0.0214
+Cardiac,0.2126,0.1281,0.1944,0.0569
+Respiratory,0.2049,0.2023,0.1606,0.0457
+Renal,0.1069,0.0379,0.1052,0.0373
+Neurological,0.1654,0.2527,0.0763,0.0299

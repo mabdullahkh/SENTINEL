@@ -1,0 +1,5 @@
+KDIGO Guidelines for Acute Kidney Injury (AKI):
+1. Stage AKI based on serum creatinine increase (Stage 1: 1.5-1.9x baseline; Stage 2: 2.0-2.9x baseline; Stage 3: >=3x baseline or initiation of RRT).
+2. Discontinue all nephrotoxic agents (NSAIDs, aminoglycosides, contrast media) when possible.
+3. Ensure volume status optimization and monitor hemodynamics.
+4. Monitor serum creatinine and urine output hourly in critical care.

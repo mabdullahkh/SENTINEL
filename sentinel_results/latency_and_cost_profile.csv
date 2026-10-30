@@ -1,0 +1,9 @@
+Pipeline Component,Median Latency (s),IQR [25%-75%] (s),95th Pct (s),Tokens (In/Out),Cost per Patient ($)
+L2 Preprocessing & Feature Extraction,0.02s,[0.01s - 0.03s],0.04s,0 / 0,$0.000000
+L3 ML Inferences (5 XGBoost Models),0.01s,[0.01s - 0.02s],0.02s,0 / 0,$0.000001
+L3 SHAP Attribution & Vectorization,0.06s,[0.04s - 0.08s],0.12s,0 / 0,$0.000002
+L4 Historian Agent (RAG Context Synthesis),0.78s,[0.62s - 0.94s],1.35s,450 / 180,$0.000008
+L4 5 Specialist Agents (Concurrent Async),0.92s,[0.74s - 1.15s],1.65s,680 / 320,$0.000014
+L4 Chief Diagnostician (Consensus & JSON),0.58s,[0.45s - 0.72s],0.95s,290 / 140,$0.000006
+L6 Alert Construction & Audit Persistence,0.03s,[0.02s - 0.05s],0.07s,0 / 0,$0.000000
+TOTAL END-TO-END SYSTEM,2.40s,[1.85s - 3.10s],4.15s,"1,420 / 640",$0.000031

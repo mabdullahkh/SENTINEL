@@ -1,0 +1,5 @@
+GOLD (COPD) & ATS (Pneumonia) Guidelines:
+1. Assess severity using CURB-65 score for community-acquired pneumonia.
+2. Initiate empiric antibiotic therapy (e.g., macrolide + beta-lactam) within 4 hours for pneumonia.
+3. For acute COPD exacerbations: administer short-acting bronchodilators, systemic corticosteroids (prednisone 40mg for 5 days), and oxygen therapy (target saturation 88-92%).
+4. Provide non-invasive ventilation (NIV) for respiratory acidosis (pH < 7.35).

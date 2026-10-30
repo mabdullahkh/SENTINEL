@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Sentinel | EHR & Multi-Agent Intelligence Dashboard</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap"
+        rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body class="dark-theme">
+    <!-- Urgent Alarm Banner (Red flashing overlay) -->
+    <div id="urgent-alarm-overlay" class="alarm-overlay hidden">
+        <div class="alarm-banner">
+            <i class="fa-solid fa-triangle-exclamation pulse"></i>
+            <span>CRITICAL EHR PATIENT ALERT: PATHOLOGY THRESHOLD EXCEEDED</span>
+            <button onclick="dismissAlarm()" class="dismiss-btn">Acknowledge</button>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-layout">
+
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="brand-text">
+                    <h1>CLINICAL SENTINEL</h1>
+                    <span class="subtitle">EHR Multi-Agent Decision Support System (MIMIC-IV Cohort)</span>
+                </div>
+            </div>
+            <div class="header-status">
+                <a href="/add-patient" class="add-patient-page-link"
+                    style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; text-decoration: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='rgba(16, 185, 129, 0.25)'; this.style.borderColor='rgba(16, 185, 129, 0.5)';"
+                    onmouseout="this.style.backgroundColor='rgba(16, 185, 129, 0.15)'; this.style.borderColor='rgba(16, 185, 129, 0.3)';"><i
+                        class="fa-solid fa-user-plus"></i> Add New Patient</a>
+                <a href="/patient-history" class="history-page-link"
+                    style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background-color: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); color: #38bdf8; text-decoration: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='rgba(56, 189, 248, 0.25)'; this.style.borderColor='rgba(56, 189, 248, 0.5)';"
+                    onmouseout="this.style.backgroundColor='rgba(56, 189, 248, 0.15)'; this.style.borderColor='rgba(56, 189, 248, 0.3)';"><i
+                        class="fa-solid fa-history"></i> Patient History</a>
+                <a href="/results" class="results-page-link"
+                    style="display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 6px; background-color: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.3); color: #a5b4fc; text-decoration: none; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; transition: all 0.2s;"
+                    onmouseover="this.style.backgroundColor='rgba(99, 102, 241, 0.25)'; this.style.borderColor='rgba(99, 102, 241, 0.5)';"
+                    onmouseout="this.style.backgroundColor='rgba(99, 102, 241, 0.15)'; this.style.borderColor='rgba(99, 102, 241, 0.3)';"><i
+                        class="fa-solid fa-chart-line"></i> Validation Metrics</a>
+                <div class="status-indicator">
+                    <span class="dot green"></span>
+                    <span>Database: mimic_subset.db</span>
+                </div>
+                <div class="status-indicator">
+                    <span class="dot green" id="ollama-status-dot"></span>
+                    <span id="ollama-status-text">Ollama: Checking...</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Workspace Grid -->
+        <main class="workspace-grid">
+
+            <!-- Column 1: Patient Sidebar Selector -->
+            <section class="panel patient-selector-panel">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-hospital-user"></i> Patient Directory</h2>
+                    <span class="badge" id="patient-count">0 Pts</span>
+                </div>
+                <div class="search-bar">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="patient-search" placeholder="Search by ID or diagnosis...">
+                </div>
+                <div class="patient-list" id="patient-list-container">
+                    <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading cohort...</div>
+                </div>
+            </section>
+
+            <!-- Column 2: Dashboard Workspace (Active Patient Details) -->
+            <div class="patient-details-wrapper" id="patient-detail-workspace">
+
+                <!-- Patient Selector Placeholder -->
+                <div class="workspace-placeholder" id="workspace-placeholder">
+                    <i class="fa-solid fa-file-medical"></i>
+                    <h3>Select a patient to begin clinical evaluation</h3>
+                    <p>Access demographics, lab timelines, machine learning risk profiles, and multi-agent MDT
+                        consultations.</p>
+                </div>
+
+                <div class="active-workspace hidden" id="active-workspace">
+
+                    <!-- Patient Summary Card -->
+                    <section class="panel demographics-panel">
+                        <div class="patient-meta-grid">
+                            <div class="meta-item">
+                                <span class="label">Patient ID</span>
+                                <span class="value val-highlight" id="patient-id-val">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">Admission ID</span>
+                                <span class="value" id="hadm-id-val">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">Age</span>
+                                <span class="value" id="age-val">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">Gender</span>
+                                <span class="value" id="gender-val">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">Admission Type</span>
+                                <span class="value" id="admission-type-val">-</span>
+                            </div>
+                            <div class="meta-item">
+                                <span class="label">Primary ICD Diagnosis</span>
+                                <span class="value text-truncate" id="diag-val" title="-">-</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Split Grid: Labs & ML Prediction -->
+                    <div class="split-grid">
+
+                        <!-- Vitals and Labs -->
+                        <section class="panel labs-panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-flask"></i> Laboratory Biomarkers</h2>
+                                <span class="info-text">LOCF Aggregated</span>
+                            </div>
+                            <div class="labs-grid" id="labs-grid-container">
+                                <!-- Dynamic Lab Cards -->
+                            </div>
+                        </section>
+
+                        <!-- ML Risk Analysis (The 5 Target Diseases) -->
+                        <section class="panel risk-analysis-panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-chart-pie"></i> ML Multiclass Risk Profile</h2>
+                                <span class="badge badge-accent">XGBoost Engine</span>
+                            </div>
+                            <div class="risk-meter-list" id="risk-meters-container">
+                                <!-- Dynamic disease risk sliders/meters -->
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Split Grid 2: Explainable AI & MDT Crew Consultation -->
+                    <div class="split-grid">
+
+                        <!-- Explainable AI Panel (SHAP / LIME Charts) -->
+                        <section class="panel xai-panel">
+                            <div class="panel-header-tabs">
+                                <button class="tab-btn active" onclick="switchXaiTab('shap')">SHAP Attributions</button>
+                                <button class="tab-btn" onclick="switchXaiTab('lime')">LIME Local Rules</button>
+                                <select id="xai-disease-selector" class="panel-select" onchange="loadXaiExplanations()">
+                                    <option value="sepsis">Sepsis</option>
+                                    <option value="cardiac">Cardiac</option>
+                                    <option value="respiratory">Respiratory</option>
+                                    <option value="renal">Renal</option>
+                                    <option value="neurological">Neurological</option>
+                                </select>
+                            </div>
+                            <div class="xai-content-body">
+                                <div id="shap-tab-content">
+                                    <canvas id="shap-chart" height="220"></canvas>
+                                </div>
+                                <div id="lime-tab-content" class="hidden">
+                                    <ul class="lime-rules-list" id="lime-rules-container">
+                                        <!-- LIME rules lists -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+
+                        <!-- Agentic MDT Multi-Agent Console -->
+                        <section class="panel mdt-console-panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-brain"></i> Multi-Agent Clinical Board</h2>
+                                <button class="action-btn" id="run-consult-btn" onclick="runAgentConsultation()">
+                                    <i class="fa-solid fa-play"></i> Initiate MDT Panel
+                                </button>
+                            </div>
+
+                            <div class="mdt-chat-container" id="mdt-chat-container">
+                                <div class="terminal-welcome">
+                                    <p class="console-prompt">> SYSTEM: Standing by to initiate multi-agent clinical
+                                        consultation panel...</p>
+                                    <p class="console-desc">Agents involved: Historian (EHR aggregation), 5 Specialists
+                                        (Sepsis, Cardiac, Respiratory, Renal, Neurological), Diagnostician (RAG
+                                        synthesized diagnosis + plan).</p>
+                                </div>
+                            </div>
+
+                            <!-- Diagnostician Output Summary (Fades in after consultation) -->
+                            <div id="diagnostician-result-card" class="diagnostician-card hidden">
+                                <div class="diag-card-header">
+                                    <h3><i class="fa-solid fa-stethoscope"></i> Diagnostician Synthesis</h3>
+                                    <div class="confidence-badge">
+                                        <span>Confidence:</span>
+                                        <span class="score" id="diag-confidence">-</span>
+                                    </div>
+                                </div>
+                                <p class="diag-assessment" id="diag-assessment-text">-</p>
+                                <div class="diag-actions">
+                                    <h4>Consolidated Action Plan:</h4>
+                                    <ul id="diag-action-list">
+                                        <!-- List steps -->
+                                    </ul>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Clinician Action Log & Continuous Feedback Loop -->
+                    <section class="panel feedback-panel">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-clock-rotate-left"></i> Clinician Action Audit (Feedback Loop)
+                            </h2>
+                        </div>
+                        <form id="feedback-form" class="feedback-form-grid" onsubmit="submitFeedback(event)">
+                            <div class="form-group">
+                                <label for="feedback-disease">Target Pathology</label>
+                                <select id="feedback-disease" required>
+                                    <option value="sepsis">Sepsis</option>
+                                    <option value="cardiac">Cardiac</option>
+                                    <option value="respiratory">Respiratory</option>
+                                    <option value="renal">Renal</option>
+                                    <option value="neurological">Neurological</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="feedback-action">Clinical Decision</label>
+                                <select id="feedback-action" required>
+                                    <option value="agree">Agree with Model & Agents</option>
+                                    <option value="override_high_risk">Override: Mark as HIGH RISK (Model missed)
+                                    </option>
+                                    <option value="override_low_risk">Override: Mark as LOW RISK (False alarm)</option>
+                                </select>
+                            </div>
+                            <div class="form-group span-cols">
+                                <label for="feedback-notes">Decision Notes / Rationale</label>
+                                <textarea id="feedback-notes"
+                                    placeholder="Enter clinical rationale, treatment overrides, or confirmation remarks..."
+                                    rows="2"></textarea>
+                            </div>
+                            <button type="submit" class="submit-btn" id="feedback-submit-btn">
+                                <i class="fa-solid fa-arrow-right-to-bracket"></i> Commit to Audited EHR & Learning Loop
+                            </button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </main>
+
+        <!-- System Performance and Evaluations Section -->
+        <section class="system-performance-section">
+            <div class="section-title">
+                <h2><i class="fa-solid fa-chart-line"></i> Pipeline Analytics & Model Evaluations</h2>
+                <span class="subtitle">Cohort validation metrics compared on Stratified 5-Fold Cross Validation</span>
+            </div>
+
+            <div class="performance-grid">
+
+                <!-- Performance Cards -->
+                <div class="panel metrics-card">
+                    <div class="panel-header">
+                        <h2>Agent Layer Performance</h2>
+                    </div>
+                    <div class="agent-metrics-list" id="agent-performance-container">
+                        <!-- Dynamic agent metrics -->
+                        <div class="metric-row">
+                            <span>Diagnostic Accuracy:</span>
+                            <span class="value" id="agent-acc-val">88.0%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>MDT Response Latency:</span>
+                            <span class="value" id="agent-latency-val">2.4s</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Alert Precision:</span>
+                            <span class="value" id="agent-precision-val">87.0%</span>
+                        </div>
+                        <div class="metric-row">
+                            <span>Data Privacy Status:</span>
+                            <span class="value green-text" id="agent-privacy-val">100% Local</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ROC / PR Chart Container -->
+                <div class="panel chart-container-card">
+                    <div class="panel-header-tabs">
+                        <button class="curve-tab-btn active" onclick="switchCurveTab('roc')">ROC Curves</button>
+                        <button class="curve-tab-btn" onclick="switchCurveTab('pr')">Precision-Recall Curves</button>
+                        <span class="info-text">Target: Multiclass Pathologies</span>
+                    </div>
+                    <div class="curve-chart-body">
+                        <canvas id="eval-curve-chart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p>Clinical Sentinel - Designed for Secure local hospital deployment. No patient data leaves the system
+                boundaries. Powered by SQLite, XGBoost, and local Ollama LLaMA 3.1.</p>
+        </footer>
+    </div>
+
+    <!-- Alert Sound (Soft hospital monitor chime for alert) -->
+    <audio id="alert-sound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav" preload="auto"></audio>
+
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

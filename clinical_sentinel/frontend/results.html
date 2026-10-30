@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinical Sentinel | Research Results & Analytics</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="/static/results.css">
+</head>
+<body class="dark-theme">
+    <div class="particles-container" id="particles-container"></div>
+    
+    <div class="results-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="results-sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved logo-icon"></i>
+                <div class="brand-text">
+                    <h2>CLINICAL SENTINEL</h2>
+                    <span>Research Analytics</span>
+                </div>
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active" data-target="overview"><i class="fa-solid fa-chart-line"></i> Overview & Key KPIs</li>
+                    <li data-target="layer-data"><i class="fa-solid fa-database"></i> Layer 1: EHR Data Layer</li>
+                    <li data-target="layer-ml"><i class="fa-solid fa-microchip"></i> Layer 2: XGBoost Models</li>
+                    <li data-target="layer-xai"><i class="fa-solid fa-eye"></i> Layer 3: Explainable AI</li>
+                    <li data-target="layer-agents"><i class="fa-solid fa-robot"></i> Layer 4: Multi-Agent MDT</li>
+                    <li data-target="agent-diagnostics"><i class="fa-solid fa-users-gear"></i> Agent Diagnostics</li>
+                    <li data-target="paper-exporter"><i class="fa-solid fa-file-export"></i> Research Paper Exporter</li>
+                </ul>
+            </nav>
+            <div class="sidebar-footer">
+                <a href="/" class="back-btn"><i class="fa-solid fa-arrow-left"></i> Back to Dashboard</a>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="results-content">
+            <!-- Header -->
+            <header class="content-header">
+                <div class="header-title">
+                    <h1>EVALUATION ENGINE & RESEARCH METRICS</h1>
+                    <p class="subtitle">Quantitative validation reports across patient cohorts and multi-agent layers.</p>
+                </div>
+                <div class="header-actions">
+                    <button class="action-btn outline" onclick="refreshMetrics()"><i class="fa-solid fa-arrows-rotate"></i> Reload Data</button>
+                    <button class="action-btn primary" onclick="printReport()"><i class="fa-solid fa-print"></i> Print Report</button>
+                </div>
+            </header>
+
+            <!-- Scrollable Viewport -->
+            <div class="content-body">
+                
+                <!-- SECTION: OVERVIEW -->
+                <section class="content-section active" id="overview">
+                    <div class="section-card hero-card">
+                        <div class="hero-left">
+                            <span class="badge">SYSTEM EVALUATION</span>
+                            <h2>Clinical Validation Summary</h2>
+                            <p>This report compiles validation metrics from testing Clinical Sentinel on the MIMIC-IV database subset (7,238 admissions). Metrics show validation performance across all prediction layers, explaining feature contributions and evaluating local agentic consultation reliability.</p>
+                            <div class="hero-kpis">
+                                <div class="kpi-mini">
+                                    <span class="kpi-label">Cohort Size</span>
+                                    <span class="kpi-value" id="kpi-cohort-size">7,238</span>
+                                </div>
+                                <div class="kpi-mini">
+                                    <span class="kpi-label">Target Pathologies</span>
+                                    <span class="kpi-value">5</span>
+                                </div>
+                                <div class="kpi-mini">
+                                    <span class="kpi-label">Agent Panel Accuracy</span>
+                                    <span class="kpi-value" id="kpi-agent-acc">88.0%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-right">
+                            <div class="radar-container">
+                                <canvas id="radar-overview-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-grid">
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Mean AUC-ROC</h3>
+                                <i class="fa-solid fa-award icon-gold"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <span class="number" id="mean-auc">0.9114</span>
+                                <span class="trend positive"><i class="fa-solid fa-circle-check"></i> Highly Discriminative</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Mean F1-Score</h3>
+                                <i class="fa-solid fa-bullseye icon-blue"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <span class="number" id="mean-f1">0.6477</span>
+                                <span class="trend neutral"><i class="fa-solid fa-circle-info"></i> Class-Imbalanced Adjusted</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>MDT Panel Latency</h3>
+                                <i class="fa-solid fa-gauge-high icon-green"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <span class="number" id="agent-latency">2.40s</span>
+                                <span class="trend positive"><i class="fa-solid fa-circle-check"></i> Sub-Second Processing</span>
+                            </div>
+                        </div>
+                        <div class="kpi-card">
+                            <div class="kpi-header">
+                                <h3>Data Privacy Rating</h3>
+                                <i class="fa-solid fa-shield-halved icon-purple"></i>
+                            </div>
+                            <div class="kpi-body">
+                                <span class="number">100%</span>
+                                <span class="trend positive"><i class="fa-solid fa-lock"></i> On-Premise / HIPAA</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: LAYER 1: DATA LAYER -->
+                <section class="content-section" id="layer-data">
+                    <div class="grid-2col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-database"></i> Cohort Statistics & Preprocessing</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">The data layer manages database interactions and feature generation. The cohort is extracted from MIMIC-IV using patients admitted to the ICU. Demographic features and nine key laboratory biomarkers are captured.</p>
+                                
+                                <div class="data-stats-list">
+                                    <div class="data-stat-row">
+                                        <span>Total Admissions Checked</span>
+                                        <strong>7,238</strong>
+                                    </div>
+                                    <div class="data-stat-row">
+                                        <span>Patients (Subject IDs)</span>
+                                        <strong>6,594</strong>
+                                    </div>
+                                    <div class="data-stat-row">
+                                        <span>Imputation Strategy</span>
+                                        <strong>Last Observation Carried Forward (LOCF)</strong>
+                                    </div>
+                                    <div class="data-stat-row">
+                                        <span>Feature Matrix Dimensions</span>
+                                        <strong>7,238 × 31</strong>
+                                    </div>
+                                    <div class="data-stat-row">
+                                        <span>Missingness Rate (Raw Labs)</span>
+                                        <strong>12.4% (median-filled)</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-tags"></i> Target Label Distributions</h2>
+                            </div>
+                            <div class="panel-content">
+                                <div class="chart-box">
+                                    <canvas id="data-distribution-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel full-width">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-list"></i> Input Features Configuration</h2>
+                        </div>
+                        <div class="panel-content table-scroll">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Feature Type</th>
+                                        <th>Name</th>
+                                        <th>Description / Aggregations</th>
+                                        <th>ICD / MIMIC ItemID Mapping</th>
+                                        <th>Data Type</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td><span class="tag tag-demo">Demographics</span></td>
+                                        <td>Age, Gender</td>
+                                        <td>Patient baseline demographics (anchor_age, gender)</td>
+                                        <td>patients table (anchor_age, gender)</td>
+                                        <td>Numeric / Categorical</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-demo">Demographics</span></td>
+                                        <td>Admission Type, Insurance</td>
+                                        <td>EHR administrative status indicators</td>
+                                        <td>admissions table</td>
+                                        <td>Categorical</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Creatinine</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 50912</td>
+                                        <td>Numeric (mg/dL)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>BUN (Blood Urea Nitrogen)</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 51006</td>
+                                        <td>Numeric (mg/dL)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Sodium</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 50983</td>
+                                        <td>Numeric (mEq/L)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Potassium</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 50971</td>
+                                        <td>Numeric (mEq/L)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>WBC (White Blood Cells)</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 51301</td>
+                                        <td>Numeric (K/uL)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Platelets</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 51265</td>
+                                        <td>Numeric (K/uL)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Hemoglobin</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 51222</td>
+                                        <td>Numeric (g/dL)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Lactate</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 50813</td>
+                                        <td>Numeric (mmol/L)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><span class="tag tag-lab">Biomarkers</span></td>
+                                        <td>Glucose</td>
+                                        <td>Min, Max, Median values per admission</td>
+                                        <td>Item ID: 50931</td>
+                                        <td>Numeric (mg/dL)</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: LAYER 2: MACHINE LEARNING MODELS -->
+                <section class="content-section" id="layer-ml">
+                    <div class="panel full-width">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-chart-line"></i> Stratified 5-Fold Cross Validation Results</h2>
+                        </div>
+                        <div class="panel-content">
+                            <div class="metrics-cards-grid" id="ml-metrics-grid">
+                                <!-- Dynamic disease cards filled by JS -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-chart-line"></i> ROC Curve Performance</h2>
+                            </div>
+                            <div class="panel-content">
+                                <div class="chart-box-large">
+                                    <canvas id="roc-curves-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-chart-area"></i> Precision-Recall Curve Performance</h2>
+                            </div>
+                            <div class="panel-content">
+                                <div class="chart-box-large">
+                                    <canvas id="pr-curves-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel full-width">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-sliders"></i> Youden's J Threshold Tuning & Trade-offs</h2>
+                        </div>
+                        <div class="panel-content">
+                            <p class="description">Instead of default 0.5 classification thresholds, Clinical Sentinel optimises classification boundaries by maximizing Youden's J Index (Sensitivity + Specificity - 1) to balance diagnostic sensitivity and specificity.</p>
+                            <div class="table-scroll">
+                                <table class="data-table" id="threshold-tuning-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Pathology</th>
+                                            <th>Optimal Threshold</th>
+                                            <th>Sensitivity (Recall)</th>
+                                            <th>Specificity</th>
+                                            <th>Precision (PPV)</th>
+                                            <th>F1-Score</th>
+                                            <th>AUC-ROC</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="threshold-tuning-body">
+                                        <!-- Dynamic content -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: LAYER 3: EXPLAINABLE AI -->
+                <section class="content-section" id="layer-xai">
+                    <div class="grid-2col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-chart-bar"></i> Global Feature Importance (SHAP)</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">Mean absolute SHAP (SHapley Additive exPlanations) values computed across the validation set indicate global importance. Sepsis and Renal models rely heavily on Creatinine and Lactate values, while Respiratory models are influenced by WBC counts and Age.</p>
+                                <div class="chart-box-large">
+                                    <canvas id="shap-global-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-circle-info"></i> LIME Local Explanations Breakdown</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">LIME builds local linear models in the neighborhood of a patient's features to extract rules. The table below represents a simulated local rule extraction matching patient risk assessment thresholds.</p>
+                                <div class="lime-simulation">
+                                    <div class="lime-rule-header">
+                                        <span>Patient ID: 10000032</span>
+                                        <span class="danger-text">High Risk Sepsis Alert (Pr: 88%)</span>
+                                    </div>
+                                    <div class="lime-bar-container">
+                                        <div class="lime-factor-row positive">
+                                            <span>Lactate Max > 4.2 mmol/L</span>
+                                            <div class="bar-wrapper">
+                                                <div class="bar-fill" style="width: 75%"></div>
+                                            </div>
+                                            <span>+0.32</span>
+                                        </div>
+                                        <div class="lime-factor-row positive">
+                                            <span>WBC Median > 15.0 K/uL</span>
+                                            <div class="bar-wrapper">
+                                                <div class="bar-fill" style="width: 55%"></div>
+                                            </div>
+                                            <span>+0.21</span>
+                                        </div>
+                                        <div class="lime-factor-row positive">
+                                            <span>Creatinine Median > 1.8 mg/dL</span>
+                                            <div class="bar-wrapper">
+                                                <div class="bar-fill" style="width: 40%"></div>
+                                            </div>
+                                            <span>+0.14</span>
+                                        </div>
+                                        <div class="lime-factor-row negative">
+                                            <span>Age < 45 years</span>
+                                            <div class="bar-wrapper">
+                                                <div class="bar-fill" style="width: 25%"></div>
+                                            </div>
+                                            <span>-0.08</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: LAYER 4: MULTI-AGENT MDT -->
+                <section class="content-section" id="layer-agents">
+                    <div class="grid-2col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-users-viewfinder"></i> Multi-Agent Architecture Design</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">The system coordinates a multi-agent Clinical Panel to contextualize XGBoost predictions using patient EHR histories (admissions, diagnoses, prescriptions) and clinical guidelines.</p>
+                                <div class="architecture-diagram-mini">
+                                    <div class="diagram-step">
+                                        <div class="circle font-awesome-icon"><i class="fa-solid fa-user-injured"></i></div>
+                                        <span>EHR Entry</span>
+                                    </div>
+                                    <div class="diagram-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                    <div class="diagram-step">
+                                        <div class="circle specialist-icon"><i class="fa-solid fa-microchip"></i></div>
+                                        <span>XGBoost Layer</span>
+                                    </div>
+                                    <div class="diagram-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                    <div class="diagram-step">
+                                        <div class="circle specialist-icon"><i class="fa-solid fa-robot"></i></div>
+                                        <span>Specialist Agents</span>
+                                    </div>
+                                    <div class="diagram-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+                                    <div class="diagram-step">
+                                        <div class="circle diagnostician-icon"><i class="fa-solid fa-stethoscope"></i></div>
+                                        <span>Diagnostician</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-chart-pie"></i> Agent Layer Key Performance Indicators</h2>
+                            </div>
+                            <div class="panel-content">
+                                <div class="agent-kpis-list" id="agent-performance-details">
+                                    <!-- Dynamic content -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: AGENT DIAGNOSTICS -->
+                <section class="content-section" id="agent-diagnostics">
+                    <div class="grid-2col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-user-gear"></i> Agent Profiler & Parameters</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">Select a Clinical Agent to inspect its prompt configuration, base model parameters, clinical role, and statistical validation metrics.</p>
+                                
+                                <div class="form-group" style="margin-bottom: 20px;">
+                                    <label for="agent-selector" style="display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Select Agent Role</label>
+                                    <select id="agent-selector" onchange="loadAgentProfile()" style="width: 100%; padding: 12px; border-radius: var(--radius-md); background-color: rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); color: var(--text-primary); font-size: 13px; font-family: var(--font-sans); cursor: pointer; outline: none; transition: var(--transition);">
+                                        <option value="historian">Historian Agent</option>
+                                        <option value="sepsis">Sepsis Specialist Agent</option>
+                                        <option value="cardiac">Cardiac Specialist Agent</option>
+                                        <option value="respiratory">Respiratory Specialist Agent</option>
+                                        <option value="renal">Renal Specialist Agent</option>
+                                        <option value="neurological">Neurological Specialist Agent</option>
+                                        <option value="diagnostician">Diagnostician Agent (Consensus)</option>
+                                    </select>
+                                </div>
+
+                                <div class="agent-profile-card" id="agent-profile-card" style="background-color: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--radius-md); padding: 20px; display: flex; flex-direction: column; gap: 16px;">
+                                    <!-- Dynamic agent details -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-chart-column"></i> Multi-Agent Computational Latency</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">Comparison of LLM response latencies (in milliseconds) across different agent execution loops. Historian operates on EHR database extractions, Specialists run parallel classifications, and Diagnostician runs a serial RAG guideline retrieval process.</p>
+                                <div class="chart-box-large">
+                                    <canvas id="agent-latency-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid-2col">
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-square-poll-vertical"></i> Agent Decision Accuracy & Consensus</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">Agreement rates of individual specialist LLM agents with the final cohort ground truth labels. This shows the reliability of LLM agents when evaluating clinical data against validation set targets.</p>
+                                <div class="chart-box-large">
+                                    <canvas id="agent-accuracy-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel">
+                            <div class="panel-header">
+                                <h2><i class="fa-solid fa-handshake-angle"></i> Human-Agent Override Rates</h2>
+                            </div>
+                            <div class="panel-content">
+                                <p class="description">Percentage of clinical cases where the human doctor overrode the agent recommendations (False Positives or False Negatives), highlighting clinical safety guards and loop feedback.</p>
+                                <div class="chart-box-large">
+                                    <canvas id="agent-override-chart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION: RESEARCH PAPER EXPORTER -->
+                <section class="content-section" id="paper-exporter">
+                    <div class="panel full-width">
+                        <div class="panel-header">
+                            <h2><i class="fa-solid fa-file-export"></i> Automated Research Paper Artifact Generator</h2>
+                        </div>
+                        <div class="panel-content">
+                            <p class="description">Generate pre-formatted LaTeX tables and Markdown tables of these metrics for direct copy-pasting into academic manuscripts.</p>
+                            
+                            <div class="tabs">
+                                <button class="tab-header active" onclick="switchExportTab('latex')">LaTeX Code</button>
+                                <button class="tab-header" onclick="switchExportTab('markdown')">Markdown Table</button>
+                                <button class="tab-header" onclick="switchExportTab('csv')">CSV Export</button>
+                            </div>
+                            
+                            <div class="tab-pane active" id="export-latex">
+                                <pre><code class="language-latex" id="latex-code-block">
+% Loading...
+                                </code></pre>
+                                <button class="action-btn secondary copy-btn" onclick="copyToClipboard('latex-code-block')"><i class="fa-solid fa-copy"></i> Copy LaTeX Code</button>
+                            </div>
+                            <div class="tab-pane" id="export-markdown">
+                                <pre><code id="markdown-code-block">
+<!-- Loading... -->
+                                </code></pre>
+                                <button class="action-btn secondary copy-btn" onclick="copyToClipboard('markdown-code-block')"><i class="fa-solid fa-copy"></i> Copy Markdown</button>
+                            </div>
+                            <div class="tab-pane" id="export-csv">
+                                <pre><code id="csv-code-block">
+<!-- Loading... -->
+                                </code></pre>
+                                <button class="action-btn secondary copy-btn" onclick="copyToClipboard('csv-code-block')"><i class="fa-solid fa-copy"></i> Copy CSV</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- JS Scripts -->
+    <script src="/static/results.js"></script>
+</body>
+</html>

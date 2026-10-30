@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-10-28T13:56:59Z",
+  "platform": "macOS-26.7.1-x86_64-i386-64bit",
+  "python_version": "3.12.3",
+  "scikit_learn_version": "1.9.0",
+  "xgboost_version": "3.3.0",
+  "pandas_version": "3.0.3",
+  "numpy_version": "2.3.5",
+  "local_llm_tag": "llama3.1:8b-instruct-q4_K_M",
+  "ollama_api": "http://localhost:11434",
+  "random_seed": 42,
+  "database_source": "mimic_subset.db (derived from MIMIC-IV v3.1)",
+  "hardware": "i386 / Apple Silicon Architecture / 32GB RAM"
+}

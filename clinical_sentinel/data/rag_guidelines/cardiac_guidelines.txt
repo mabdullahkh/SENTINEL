@@ -1,0 +1,5 @@
+ACC/AHA Heart Failure Guidelines:
+1. Stage patient risk (Stage A-D) and classification (HFrEF vs HFpEF).
+2. Initiate Guideline-Directed Medical Therapy (GDMT): ARNI/ACEi/ARB, beta-blocker, MRA, and SGLT2i for HFrEF.
+3. Manage volume status with loop diuretics (e.g., Furosemide) in patients with fluid retention.
+4. For acute coronary syndrome (ACS/MI): administer Aspirin, P2Y12 inhibitor, heparin, and evaluate for urgent reperfusion (PCI/Thrombolysis).

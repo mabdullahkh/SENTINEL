@@ -1,0 +1,6 @@
+Surviving Sepsis Campaign Guidelines (2021):
+1. Measure lactate level. Re-measure if initial lactate is > 2 mmol/L.
+2. Obtain blood cultures prior to administration of antibiotics.
+3. Administer broad-spectrum antibiotics within 1 hour of recognition.
+4. Administer 30 mL/kg crystalloid fluid for hypotension or lactate >= 4 mmol/L within 3 hours.
+5. Apply vasopressors (norepinephrine first-line) if patient is hypotensive during or after fluid resuscitation.

@@ -1,0 +1,6 @@
+System / Baseline,AUC-ROC,Sensitivity (Recall),PPV (Precision),F1-Score,Alerts per 100 Pts,Alerts per 100 Pt-Days,Number Needed to Evaluate (NNE)
+Clinical Score (qSOFA proxy),0.746,76.7%,17.8%,0.289,40.0,9.5,5.61
+Logistic Regression,0.853,75.7%,25.5%,0.381,27.6,6.6,3.92
+Random Forest,0.858,67.0%,32.7%,0.439,19.0,4.5,3.06
+XGBoost Alone (ML Tier),0.881,74.8%,35.2%,0.478,19.8,4.7,2.84
+SENTINEL (Full Multi-Agent),0.881,74.8%,35.2%,0.478,19.8,4.7,2.84
